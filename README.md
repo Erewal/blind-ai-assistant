@@ -23,11 +23,12 @@ A projekt egy célzott kérdés-válasz alapú megoldást vizsgál, amelyben a f
 ## Tervezett működés
 
 1. A felhasználó elindítja az alkalmazást, és lefényképez egy rövid, nyomtatott szöveget.
-2. Szóban feltesz egy kérdést a képen szereplő információval kapcsolatban.
-3. Az alkalmazás szövegfelismeréssel feldolgozza a képet.
-4. A rendszer a felismert szöveg és a felhasználó kérdése alapján megpróbálja meghatározni a választ.
-5. Az alkalmazás magyar nyelven, hangosan közli az eredményt.
-6. Ha a kép minősége nem megfelelő, vagy a válasz nem állapítható meg kellő biztonsággal, az alkalmazás jelzi a bizonytalanságot, és szükség esetén új fényképet kér.
+2. A felhasználó szóban feltesz egy kérdést a képen szereplő információval kapcsolatban.
+3. Az alkalmazás optikai karakterfelismeréssel (OCR) digitális szöveggé alakítja a képen szereplő tartalmat.
+4. A felismert szöveg és a felhasználó kérdése eljut a háttérrendszerhez, amely továbbítja azokat a kiválasztott mesterségesintelligencia-szolgáltatásnak.
+5. A rendszer a rendelkezésre álló szöveg alapján megpróbálja meghatározni a választ.
+6. Az alkalmazás magyar nyelven, hangosan közli a választ, és lehetőséget biztosít annak megismétlésére.
+7. Ha a kép nem olvasható, a keresett információ nem található meg, vagy a válasz nem állapítható meg kellő biztonsággal, az alkalmazás jelzi a problémát, és szükség esetén új fénykép készítését kéri.
 
 ## A prototípus tervezett funkciói
 
@@ -51,18 +52,26 @@ A projekt során különös figyelmet kap annak vizsgálata, hogy a rendszer men
 
 ## Tervezett technológiák
 
+A prototípus Android-platformra készül, React Native és TypeScript használatával. A háttérrendszer feladata a mobilalkalmazás és a kiválasztott mesterségesintelligencia-szolgáltatás közötti kommunikáció biztosítása.
+
 | Terület | Tervezett technológia vagy megoldás |
 |---|---|
 | Mobilplatform | Android |
-| Programozási nyelv | Kotlin |
+| Mobilalkalmazás | React Native |
+| Programozási nyelv | TypeScript |
 | Akadálymentesítés | Android TalkBack és akadálymentes felületi elemek |
-| Szövegfelismerés | Meglévő OCR-megoldás |
-| Intelligens információkinyerés | Meglévő mesterségesintelligencia-modell vagy API |
-| Beszédfelismerés | Androidon elérhető beszédfelismerési megoldás |
+| Fényképkészítés | React Native-kompatibilis kamera-megoldás |
+| Szövegfelismerés (OCR) | Google ML Kit Text Recognition vagy más megfelelő OCR-megoldás |
+| Intelligens információkinyerés | Meglévő mesterségesintelligencia-modell API-n keresztül |
+| Háttérrendszer | Python és FastAPI |
+| Beszédfelismerés | Androidon elérhető, magyar nyelvet támogató beszédfelismerési megoldás |
 | Hangos válasz | Android szövegfelolvasó (Text-to-Speech, TTS) |
-| Háttérrendszer | Igény szerint Python és FastAPI |
 
-A konkrét könyvtárak és szolgáltatások kiválasztása a prototípus fejlesztése során, a magyar nyelvi támogatás, az integrálhatóság, a költségek és a felhasználási feltételek figyelembevételével történik.
+A mobilalkalmazás felel a felhasználói interakciókért, a fényképkészítésért és a hangos visszajelzésért. A szövegfelismerés lehetőség szerint a mobilkészüléken történik. A háttérrendszer a felismert szöveget és a felhasználó kérdését továbbítja a kiválasztott mesterségesintelligencia-szolgáltatásnak, majd visszaküldi a választ az alkalmazásnak.
+
+A háttérrendszer használatának egyik célja az API-kulcs biztonságos kezelése és az alkalmazás, illetve a mesterségesintelligencia-szolgáltatás közötti kommunikáció elkülönítése. A kezdeti prototípushoz nem tervezek felhasználói fiókokat vagy adatbázist.
+
+A konkrét könyvtárak és szolgáltatások kiválasztása a fejlesztés kezdeti szakaszában, a magyar nyelvi támogatás, az Android-kompatibilitás, az integrálhatóság, a költségek és a felhasználási feltételek figyelembevételével történik. A natív Android-funkciók integrálhatóságát a választott React Native-könyvtárak alapján ellenőrzöm.
 
 ## Tesztelési és értékelési terv
 
@@ -84,6 +93,8 @@ A kezdeti tesztkészlet tervezett mérete **20–30 eset**, amely többek közö
 - **Újrafényképezések száma:** milyen gyakran van szükség új kép készítésére.
 - **Sikeres feladatvégrehajtás aránya:** milyen arányban jut el a felhasználó a keresett információ megszerzéséig.
 - **Akadálymentes használhatóság:** mennyire érthető a kezelési folyamat és a hibákról adott visszajelzés TalkBack használata mellett.
+
+A tesztelés során külön kezelem a helyes választ, a forrásból nem alátámasztható választ és az indokolt bizonytalansági jelzést. A rendszer nem tekinthető sikeresnek pusztán azért, mert minden kérdésre választ ad: fontos szempont az is, hogy elégtelen vagy hibás bemenet esetén elkerülje a félrevezető válaszokat. A tesztesetekhez előzetesen rögzítem a helyes választ, illetve azt is, ha a rendelkezésre álló információ alapján nem várható megalapozott válasz.
 
 A tesztek során a rendszer technikai pontosságát és a használhatóságot külön szempontként kezelem. Amennyiben lehetőség nyílik rá, a későbbiekben célcsoporthoz tartozó felhasználóktól is gyűjtök visszajelzést, megfelelő tájékoztatás és hozzájárulás mellett.
 
@@ -111,14 +122,15 @@ A kezelési folyamat kialakításánál elsődleges szempont a meglévő Android
 | Szakasz | Tervezett feladat |
 |---|---|
 | 1. | A feladat pontosítása, szakirodalom és hasonló alkalmazások áttekintése |
-| 2. | Android-projekt létrehozása, alapfelület és TalkBack-kompatibilitás kialakítása |
-| 3. | Fényképkészítés és OCR-integráció |
-| 4. | Kérdésfeltevés, információkinyerés és hangos válasz megvalósítása |
-| 5. | Bizonytalanságkezelés, hibajelzések és újrafényképezési folyamat |
-| 6. | Tesztesetek összeállítása, mérés és eredmények kiértékelése |
-| 7. | Dokumentáció, bemutató és a szakdolgozat elkészítése |
+| 2. | React Native-projekt létrehozása, Androidon futó alapalkalmazás és TalkBack-kompatibilis felület kialakítása |
+| 3. | Fényképkészítés és OCR-integráció megvalósítása, a felismert szöveg ellenőrzése |
+| 4. | Python és FastAPI alapú háttérrendszer létrehozása, az alkalmazás és a mesterségesintelligencia-szolgáltatás összekapcsolása |
+| 5. | Kérdésfeltevés, információkinyerés és magyar nyelvű hangos válasz megvalósítása |
+| 6. | Bizonytalanságkezelés, hibajelzések, válaszismétlés és újrafényképezési folyamat kialakítása |
+| 7. | Tesztesetek összeállítása, mérések elvégzése és az eredmények kiértékelése |
+| 8. | Dokumentáció, bemutató és a szakdolgozat elkészítése |
 
-Az ütemezés a félév során a megvalósítás tapasztalatai és a rendelkezésre álló idő alapján pontosítható.
+A fejlesztés során elsődleges szempont a működő minimális prototípus mielőbbi elkészítése. A további funkciókat erre építve, fokozatosan valósítom meg. Ha valamelyik technológiai elem integrációja a vártnál nehezebbnek bizonyul, a féléves vállalás teljesíthetősége érdekében a legfontosabb funkciókat részesítem előnyben.
 
 ## Kapcsolódó megoldások és források
 
@@ -134,9 +146,9 @@ A kapcsolódó alkalmazások összehasonlítása során a rövid, nyomtatott sz�
 
 **Státusz: tervezési és előkészítési szakasz.**
 
-A projekt célja, a kezdeti felhasználási eset és a prototípus tervezett funkciói meghatározásra kerültek. A fejlesztés jelenlegi szakaszában a követelmények pontosítása, a technológiai megoldások kiválasztása és a megvalósítás előkészítése zajlik.
+A projekt célja, a kezdeti felhasználási eset, a tervezett funkciók és az értékelés fő szempontjai meghatározásra kerültek. A fejlesztés előtt álló feladatok közé tartozik a technológiai környezet véglegesítése, a szükséges könyvtárak kipróbálása és a megvalósítás lépéseinek előkészítése.
 
-Az Android-alkalmazás működő implementációja még nem készült el. A következő lépés az alapvető Android-projekt létrehozása, majd a fényképkészítés, a szövegfelismerés és a hangos válaszadás fokozatos megvalósítása.
+A működő mobilalkalmazás és a háttérrendszer implementációja még nem készült el. A következő lépés egy Androidon futó React Native-alkalmazás létrehozása, majd a fényképkészítés és a szövegfelismerés megvalósítása. Ezt követően kerül sor a háttérrendszer, a kérdésalapú információkinyerés és a hangos visszajelzés integrálására.
 
 ## Várható eredmény
 
